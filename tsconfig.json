@@ -10,20 +10,16 @@
         "esModuleInterop": true,
         "target": "ESNext",
         "moduleResolution": "Node",
-        "outDir": "dist",
+        "outDir": "api",
         "noFallthroughCasesInSwitch": true,
         // "isolatedModules": true,
         "strict": true,
         "noImplicitAny": true,
-        "useUnknownInCatchVariables": false,
+        "useUnknownInCatchVariables": false
     },
-    "include": [
-        "**/*.ts"
-    ],
+    "include": ["**/*.ts"],
     "ts-node": {
         "esm": true
     },
-    "lib": [
-        "esnext"
-    ]
+    "lib": ["esnext"]
 }

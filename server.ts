@@ -3,7 +3,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 
 import { mongoDbConnect } from "./core/mongo";
-import { productsRoute, tokenRoute, userRoute } from "./routes";
+import { productsRoute, tokenRoute, userRoute, roleRoute } from "./routes";
 
 const app = express();
 
@@ -21,6 +21,7 @@ mongoDbConnect();
 productsRoute(app);
 userRoute(app);
 tokenRoute(app);
+roleRoute(app);
 
 const PORT = process.env.PORT || 3030;
 

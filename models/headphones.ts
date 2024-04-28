@@ -12,7 +12,7 @@ interface ProductModel {
 export type ProductModelDocument = ProductModel & Document;
 
 export const Product = model<ProductModelDocument>(
-    "Products",
+    "Product",
     new Schema<ProductModel>(
         {
             title: {

@@ -2,7 +2,9 @@ import mongoose, { Model } from "mongoose";
 
 import { User, UserModelDocument } from "./user";
 import { Product, ProductModelDocument } from "./headphones";
-import { TokenModel, TokenModelDocument } from "./token";
+import { Token, TokenModelDocument } from "./token";
+import { Role, RoleModelDocument } from "./role";
+
 mongoose.Promise = global.Promise;
 
 interface Database {
@@ -10,11 +12,13 @@ interface Database {
     user: Model<UserModelDocument>;
     product: Model<ProductModelDocument>;
     tokenModel: Model<TokenModelDocument>;
+    role: Model<RoleModelDocument>;
 }
 
 export const db: Database = {
     mongoose,
     user: User,
     product: Product,
-    tokenModel: TokenModel,
+    tokenModel: Token,
+    role: Role,
 };

@@ -2,72 +2,91 @@ import { db } from "../models";
 import { userDto } from "../dtos";
 import HashService from "./hash-service";
 import JwtService from "./jwt-service";
+import RoleService from "./role-service";
 
 class UserService {
-	async checkUserExist(login: string) {
-		const existUser = await db.user.findOne({ login });
-		return !!existUser;
-	}
+    async checkUserExist(login: string) {
+        const existUser = await db.user.findOne({ login });
+        return !!existUser;
+    }
 
-	async registration(login: string, password: string) {
-		const hashedPassword = HashService.createHash(password);
-		const user = new db.user({ login, password: hashedPassword });
-		await user.save();
-		const userData = userDto(user);
+    async registration(
+        login: string,
+        password: string,
+        name: string,
+        surname: string,
+        email: string
+    ) {
+        const hashedPassword = HashService.createHash(password);
 
-		const accessToken = JwtService.createAccessToken(userData);
-		const refreshToken = JwtService.createRefreshToken(userData);
-		await JwtService.saveToken(user._id, refreshToken);
+        const { roleData } = await RoleService.findRole("user");
 
-		return { user: userData, accessToken, refreshToken };
-	}
+        const user = new db.user({
+            login,
+            name,
+            surname,
+            email,
+            role: roleData._id,
+            password: hashedPassword,
+        });
+        await user.save();
+        await user.populate("role");
+        const userData = userDto(user);
 
-	async login(login: string, password: string) {
-		const existUser = await db.user.findOne({ login });
-		if (!existUser) {
-			throw new Error("Пользователь не найден");
-		}
-		const isPasswordConfirmed = HashService.confirmPassword(
-			password,
-			existUser.password
-		);
-		if (!isPasswordConfirmed) {
-			throw new Error("Неверный пароль");
-		}
-		const userData = userDto(existUser);
-		const accessToken = JwtService.createAccessToken(userData);
-		const refreshToken = JwtService.createRefreshToken(userData);
-		await JwtService.saveToken(existUser._id, refreshToken);
-		return { user: userData, accessToken, refreshToken };
-	}
+        const accessToken = JwtService.createAccessToken(userData);
+        const refreshToken = JwtService.createRefreshToken(userData);
+        await JwtService.saveToken(user._id, refreshToken);
 
-	async refresh(refreshToken: string | undefined) {
-		if (!refreshToken) {
-			throw new Error("Unauthorized");
-		}
-		const userDataOld = JwtService.verifyRefreshToken(refreshToken);
-		const tokenData = JwtService.findTokenData(refreshToken);
+        return { user: userData, accessToken, refreshToken };
+    }
 
-		if (!userDataOld || !tokenData) {
-			throw new Error("Unauthorized");
-		}
+    async login(login: string, password: string) {
+        const existUser = await db.user.findOne({ login });
+        if (!existUser) {
+            throw new Error("Пользователь не найден");
+        }
+        const isPasswordConfirmed = HashService.confirmPassword(
+            password,
+            existUser.password
+        );
+        if (!isPasswordConfirmed) {
+            throw new Error("Неверный пароль");
+        }
+        await existUser.populate("role");
+        const userData = userDto(existUser);
+        const accessToken = JwtService.createAccessToken(userData);
+        const refreshToken = JwtService.createRefreshToken(userData);
+        await JwtService.saveToken(existUser._id, refreshToken);
+        return { user: userData, accessToken, refreshToken };
+    }
 
-		const user = await db.user.findById(userDataOld._id);
-		if (!user) {
-			throw new Error("Unauthorized");
-		}
+    async refresh(refreshToken: string | undefined) {
+        if (!refreshToken) {
+            throw new Error("Unauthorized");
+        }
+        const userDataOld = JwtService.verifyRefreshToken(refreshToken);
+        const tokenData = JwtService.findTokenData(refreshToken);
 
-		const userData = userDto(user);
-		const accessToken = JwtService.createAccessToken(userData);
-		const refreshTokenNew = JwtService.createRefreshToken(userData);
-		await JwtService.saveToken(userData._id, refreshToken);
+        if (!userDataOld || !tokenData) {
+            throw new Error("Unauthorized");
+        }
 
-		return { user: userData, refreshToken: refreshTokenNew, accessToken };
-	}
+        const user = await db.user.findById(userDataOld._id);
+        if (!user) {
+            throw new Error("Unauthorized");
+        }
 
-	async logout(refreshToken: string) {
-		await JwtService.removeToken(refreshToken);
-	}
+        const userData = userDto(user);
+        const accessToken = JwtService.createAccessToken(userData);
+        const refreshTokenNew = JwtService.createRefreshToken(userData);
+        await JwtService.saveToken(userData._id, refreshToken);
+
+        return { user: userData, refreshToken: refreshTokenNew, accessToken };
+    }
+
+    async logout(refreshToken: string) {
+        await JwtService.removeToken(refreshToken);
+    }
 }
 
 export default new UserService();

@@ -74,7 +74,7 @@ export const login = async (req: Request, res: Response) => {
     } catch (error) {
         res.status(400).json({
             error,
-            errorMessage: "Ошибка при входе",
+            errorMessage: error.message,
         });
     }
 };
@@ -151,7 +151,7 @@ export const deleteAll = async (req: Request, res: Response) => {
         });
     } catch (error) {
         res.status(403).json({
-            message: "Cannot delete all users",
+            errorMessage: "Не удалось удалить всех пользователей",
             error,
         });
     }

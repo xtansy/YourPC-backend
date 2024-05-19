@@ -1,19 +1,24 @@
 import { Schema, model } from "mongoose";
 import { Document } from "mongoose";
 
-interface ProductModel {
+interface RamModel {
     title: string;
     img: string;
     price: number;
     rate: number;
     type: string;
+    characteristics: {
+        memoryCount: number;
+        clockFrequency: number;
+        memoryType: string;
+    };
 }
 
-export type ProductModelDocument = ProductModel & Document;
+export type RamModelDocument = RamModel & Document;
 
-export const Product = model<ProductModelDocument>(
-    "Product",
-    new Schema<ProductModel>(
+export const Ram = model<RamModelDocument>(
+    "Ram",
+    new Schema<RamModel>(
         {
             title: {
                 required: true,
@@ -34,6 +39,20 @@ export const Product = model<ProductModelDocument>(
             type: {
                 required: true,
                 type: String,
+            },
+            characteristics: {
+                memoryCount: {
+                    required: true,
+                    type: Number,
+                },
+                clockFrequency: {
+                    required: true,
+                    type: Number,
+                },
+                memoryType: {
+                    required: true,
+                    type: String,
+                },
             },
         },
         {

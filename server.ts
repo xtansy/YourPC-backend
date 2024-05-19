@@ -3,7 +3,16 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 
 import { mongoDbConnect } from "./core/mongo";
-import { productsRoute, tokenRoute, userRoute, roleRoute } from "./routes";
+import {
+    tokenRoute,
+    userRoute,
+    roleRoute,
+    processorRoute,
+    productRoute,
+    motherboardRoute,
+    videocardRoute,
+    ramRoute,
+} from "./routes";
 
 const app = express();
 
@@ -18,10 +27,14 @@ app.use(express.urlencoded({ extended: true }));
 
 mongoDbConnect();
 
-productsRoute(app);
 userRoute(app);
 tokenRoute(app);
 roleRoute(app);
+processorRoute(app);
+productRoute(app);
+motherboardRoute(app);
+videocardRoute(app);
+ramRoute(app);
 
 const PORT = process.env.PORT || 3030;
 

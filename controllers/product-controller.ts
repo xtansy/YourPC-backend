@@ -28,3 +28,33 @@ export const get = async (req: Request, res: Response) => {
         });
     }
 };
+
+export const getById = async (req: Request, res: Response) => {
+    try {
+        const id = req.params.id;
+
+        const processorItem = await processor.findById(id);
+        const ramItem = await ram.findById(id);
+        const motherboardItem = await motherboard.findById(id);
+        const videocardItem = await videocard.findById(id);
+
+        const found =
+            processorItem || ramItem || motherboardItem || videocardItem;
+
+        if (!found) {
+            return res.status(404).json({
+                errorMessage: "Продукт не найден",
+            });
+        }
+
+        res.json({
+            message: "Успех!",
+            data: found,
+        });
+    } catch (error) {
+        res.status(403).json({
+            errorMessage: "Ошибка при получении продукта",
+            error,
+        });
+    }
+};

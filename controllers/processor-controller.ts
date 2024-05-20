@@ -18,6 +18,30 @@ export const get = async (req: Request, res: Response) => {
     }
 };
 
+export const getById = async (req: Request, res: Response) => {
+    try {
+        const id = req.params.id;
+
+        const item = await processor.findById(id);
+
+        if (!item) {
+            res.status(404).json({
+                errorMessage: "Не найден",
+            });
+        }
+
+        res.json({
+            message: "Успех!",
+            data: item,
+        });
+    } catch (error) {
+        res.status(403).json({
+            errorMessage: "Ошибка при получении процессоров",
+            error,
+        });
+    }
+};
+
 export const create = async (req: Request, res: Response) => {
     try {
         const { title, img, price, rate, type, characteristics } = req.body;

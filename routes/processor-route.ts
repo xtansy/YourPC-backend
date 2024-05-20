@@ -1,8 +1,15 @@
 import { Express } from "express-serve-static-core";
-import { get, create, deleteAll } from "../controllers/processor-controller";
+import {
+    get,
+    getById,
+    create,
+    deleteAll,
+} from "../controllers/processor-controller";
 
 export const processorRoute = (app: Express) => {
     app.get("/processors", get);
+
+    app.get("/processor/:id", getById);
 
     app.post("/processor", create);
 

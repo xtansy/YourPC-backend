@@ -15,10 +15,10 @@ export const userDto = (user: UserModelDocument): UserDto => {
     return {
         _id: user._id,
         login: user.login,
-        password: user.password,
-        email: user.email,
         name: user.name,
         surname: user.surname,
+        email: user.email,
+        password: user.password,
         role: user.role.role,
     };
 };

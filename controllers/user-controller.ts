@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
+import crypto from "crypto";
 
 import { UserService, HashService, JwtService } from "../services";
+import { transporter } from "../core/transporter";
 import { db } from "../models";
 const { user } = db;
 
@@ -14,6 +16,45 @@ export const getAll = async (req: Request, res: Response) => {
     } catch (error) {
         res.json({
             errorMessage: "Ошибка при получении всех пользователей",
+            error,
+        });
+    }
+};
+
+export const recovery = async (req: Request, res: Response) => {
+    try {
+        const { email } = req.body;
+
+        const existUser = await user.findOne({ email });
+
+        if (!existUser) {
+            return res.status(404).json({
+                errorMessage: "Пользователь с такой почтой не найден",
+            });
+        }
+
+        const newPassword = crypto.randomBytes(8).toString("hex");
+        const hashedPassword = HashService.createHash(newPassword);
+
+        existUser.password = hashedPassword;
+        await existUser.save();
+
+        const mailOptions = {
+            from: "your-pc-supp@mail.ru",
+            to: email,
+            subject: "Восстановление пароля",
+            text: `Ваш новый пароль: ${newPassword}`,
+        };
+
+        await transporter.sendMail(mailOptions);
+
+        res.json({
+            message: "Новый пароль отправлен на почту!",
+            data: existUser,
+        });
+    } catch (error) {
+        res.json({
+            errorMessage: "Ошибка при восстановлении",
             error,
         });
     }

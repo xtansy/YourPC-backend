@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { db } from "../models";
 
-const { processor } = db;
+const { processor, user: userDb } = db;
 
 export const get = async (req: Request, res: Response) => {
     try {
@@ -25,7 +25,7 @@ export const getById = async (req: Request, res: Response) => {
         const item = await processor.findById(id);
 
         if (!item) {
-            res.status(404).json({
+            return res.status(404).json({
                 errorMessage: "Не найден",
             });
         }
@@ -64,7 +64,11 @@ export const create = async (req: Request, res: Response) => {
 
 export const update = async (req: Request, res: Response) => {
     try {
-        const { id, title, img, price, rate } = req.body;
+        const { user, id, ...updateData } = req.body;
+
+        console.log("req.body", req.body);
+
+        console.log("@@ user", user);
 
         const editingItem = await processor.findById(id);
 
@@ -74,10 +78,30 @@ export const update = async (req: Request, res: Response) => {
             });
         }
 
-        editingItem.title = title;
-        editingItem.img = img;
-        editingItem.price = price;
-        editingItem.rate = rate;
+        if (updateData.characteristics) {
+            updateData.characteristics = {
+                ...editingItem.characteristics,
+                ...updateData.characteristics,
+            };
+        }
+
+        if (updateData.feedback) {
+            const newFeedback = updateData.feedback.map((item: any) => ({
+                ...item,
+                user,
+            }));
+            updateData.feedback = {
+                ...editingItem.feedback,
+                ...newFeedback,
+            };
+        }
+
+        const updatedItem = {
+            ...editingItem,
+            ...updateData,
+        };
+
+        Object.assign(editingItem, updatedItem);
 
         await editingItem.save();
 
@@ -103,6 +127,31 @@ export const deleteAll = async (req: Request, res: Response) => {
     } catch (error) {
         res.status(403).json({
             errorMessage: "Не удалось удалить все процессоры",
+            error,
+        });
+    }
+};
+
+export const deleteOne = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+
+        const item = await processor.findById(id);
+        if (!item) {
+            return res.status(404).json({
+                message: "Продукт не найден!",
+            });
+        }
+
+        await processor.deleteOne({ _id: id });
+
+        res.json({
+            message: "Успех!",
+            data: "Процессор был удален",
+        });
+    } catch (error) {
+        res.status(403).json({
+            errorMessage: "Не удалось удалить процессор",
             error,
         });
     }

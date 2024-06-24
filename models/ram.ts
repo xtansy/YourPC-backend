@@ -1,5 +1,6 @@
 import { Schema, model } from "mongoose";
 import { Document } from "mongoose";
+import { type Feedback } from "./types";
 
 interface RamModel {
     title: string;
@@ -12,6 +13,7 @@ interface RamModel {
         clockFrequency: number;
         memoryType: string;
     };
+    feedback: Feedback[];
 }
 
 export type RamModelDocument = RamModel & Document;
@@ -54,6 +56,16 @@ export const Ram = model<RamModelDocument>(
                     type: String,
                 },
             },
+            feedback: [
+                {
+                    user: {
+                        type: Schema.Types.ObjectId,
+                        ref: "User",
+                    },
+                    text: String,
+                    rate: Number,
+                },
+            ],
         },
         {
             versionKey: false,

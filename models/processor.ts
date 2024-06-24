@@ -1,5 +1,6 @@
 import { Schema, model } from "mongoose";
 import { Document } from "mongoose";
+import { type HeatingIndicator, type Feedback } from "./types";
 
 interface ProcessorModel {
     title: string;
@@ -13,7 +14,9 @@ interface ProcessorModel {
         baseFrequency: number;
         maxFrequency: number;
         maxCoreTemperature: number;
+        heating: HeatingIndicator[];
     };
+    feedback: Feedback[];
 }
 
 export type ProcessorModelDocument = ProcessorModel & Document;
@@ -63,7 +66,23 @@ export const Processor = model<ProcessorModelDocument>(
                     required: true,
                     type: Number,
                 },
+                heating: [
+                    {
+                        usage: Number,
+                        temperature: Number,
+                    },
+                ],
             },
+            feedback: [
+                {
+                    user: {
+                        type: Schema.Types.ObjectId,
+                        ref: "User",
+                    },
+                    text: String,
+                    rate: Number,
+                },
+            ],
         },
         {
             versionKey: false,

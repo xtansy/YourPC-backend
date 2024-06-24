@@ -58,3 +58,97 @@ export const getById = async (req: Request, res: Response) => {
         });
     }
 };
+
+export const update = async (req: Request, res: Response) => {
+    try {
+        const { user: userPayload, id, ...updateData } = req.body;
+        const user = userPayload.userData;
+
+        const processorItem = await processor.findById(id);
+        const ramItem = await ram.findById(id);
+        const motherboardItem = await motherboard.findById(id);
+        const videocardItem = await videocard.findById(id);
+
+        const editingItem =
+            processorItem || ramItem || motherboardItem || videocardItem;
+
+        if (!editingItem) {
+            return res.status(404).json({
+                message: "Продукт не найден!",
+            });
+        }
+
+        if (updateData.characteristics) {
+            updateData.characteristics = {
+                ...editingItem.characteristics,
+                ...updateData.characteristics,
+            };
+        }
+
+        if (updateData.feedback) {
+            const newFeedback = updateData.feedback.map((item: any) => ({
+                ...item,
+                user,
+            }));
+            updateData.feedback = newFeedback;
+        }
+
+        const updatedItem = {
+            ...editingItem,
+            ...updateData,
+        };
+
+        Object.assign(editingItem, updatedItem);
+
+        await editingItem.save();
+
+        res.json({
+            message: "success",
+            data: editingItem,
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(403).json({
+            errorMessage: "Не удалось обновить продукт",
+            error,
+        });
+    }
+};
+
+export const addFeedback = async (req: Request, res: Response) => {
+    try {
+        const { user: userPayload, id, feedback } = req.body;
+        const user = userPayload.userData;
+
+        const processorItem = await processor.findById(id);
+        const ramItem = await ram.findById(id);
+        const motherboardItem = await motherboard.findById(id);
+        const videocardItem = await videocard.findById(id);
+
+        const editingItem =
+            processorItem || ramItem || motherboardItem || videocardItem;
+
+        if (!editingItem) {
+            return res.status(404).json({
+                message: "Продукт не найден!",
+            });
+        }
+
+        feedback.user = user;
+
+        editingItem.feedback.push(feedback);
+
+        await editingItem.save();
+
+        res.json({
+            message: "success",
+            data: editingItem,
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(403).json({
+            errorMessage: "Не удалось обновить продукт",
+            error,
+        });
+    }
+};

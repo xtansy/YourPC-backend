@@ -1,5 +1,6 @@
 import { Schema, model } from "mongoose";
 import { Document } from "mongoose";
+import { type Feedback } from "./types";
 
 interface VideocardModel {
     title: string;
@@ -15,6 +16,8 @@ interface VideocardModel {
         processorsCount: number;
         textureBlocks: number;
     };
+
+    feedback: Feedback[];
 }
 
 export type VideocardModelDocument = VideocardModel & Document;
@@ -66,6 +69,17 @@ export const Videocard = model<VideocardModelDocument>(
                     type: Number,
                 },
             },
+
+            feedback: [
+                {
+                    user: {
+                        type: Schema.Types.ObjectId,
+                        ref: "User",
+                    },
+                    text: String,
+                    rate: Number,
+                },
+            ],
         },
         {
             versionKey: false,

@@ -1,5 +1,6 @@
 import { Schema, model } from "mongoose";
 import { Document } from "mongoose";
+import { type Feedback } from "./types";
 
 interface MotherboardModel {
     title: string;
@@ -14,6 +15,8 @@ interface MotherboardModel {
         maxMemoryFrequency: number;
         maxMemoryCapacity: number;
     };
+
+    feedback: Feedback[];
 }
 
 export type MotherboardModelDocument = MotherboardModel & Document;
@@ -61,6 +64,17 @@ export const Motherboard = model<MotherboardModelDocument>(
                     type: Number,
                 },
             },
+
+            feedback: [
+                {
+                    user: {
+                        type: Schema.Types.ObjectId,
+                        ref: "User",
+                    },
+                    text: String,
+                    rate: Number,
+                },
+            ],
         },
         {
             versionKey: false,

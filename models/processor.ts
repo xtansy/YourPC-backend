@@ -76,6 +76,7 @@ export const Processor = model<ProcessorModelDocument>(
             feedback: [
                 {
                     user: {
+                        required: true,
                         type: Schema.Types.ObjectId,
                         ref: "User",
                     },

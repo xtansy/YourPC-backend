@@ -66,10 +66,6 @@ export const update = async (req: Request, res: Response) => {
     try {
         const { user, id, ...updateData } = req.body;
 
-        console.log("req.body", req.body);
-
-        console.log("@@ user", user);
-
         const editingItem = await processor.findById(id);
 
         if (!editingItem) {

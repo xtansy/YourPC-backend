@@ -83,3 +83,28 @@ export const deleteAll = async (req: Request, res: Response) => {
         });
     }
 };
+
+export const deleteOne = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+
+        const item = await ram.findById(id);
+        if (!item) {
+            return res.status(404).json({
+                message: "Оп.память не найдена!",
+            });
+        }
+
+        await ram.deleteOne({ _id: id });
+
+        res.json({
+            message: "Успех!",
+            data: "Оп.память была удалена",
+        });
+    } catch (error) {
+        res.status(403).json({
+            errorMessage: "Не удалось удалить Оп.память",
+            error,
+        });
+    }
+};

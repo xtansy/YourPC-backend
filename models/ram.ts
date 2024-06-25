@@ -59,6 +59,7 @@ export const Ram = model<RamModelDocument>(
             feedback: [
                 {
                     user: {
+                        required: true,
                         type: Schema.Types.ObjectId,
                         ref: "User",
                     },

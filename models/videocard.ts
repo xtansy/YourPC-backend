@@ -73,6 +73,7 @@ export const Videocard = model<VideocardModelDocument>(
             feedback: [
                 {
                     user: {
+                        required: true,
                         type: Schema.Types.ObjectId,
                         ref: "User",
                     },

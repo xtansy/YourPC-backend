@@ -68,6 +68,7 @@ export const Motherboard = model<MotherboardModelDocument>(
             feedback: [
                 {
                     user: {
+                        required: true,
                         type: Schema.Types.ObjectId,
                         ref: "User",
                     },

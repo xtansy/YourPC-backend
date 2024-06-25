@@ -197,3 +197,36 @@ export const deleteAll = async (req: Request, res: Response) => {
         });
     }
 };
+
+export const update = async (req: Request, res: Response) => {
+    try {
+        const { id, name, surname, email } = req.body;
+
+        const editingItem = await user.findById(id);
+
+        if (!editingItem) {
+            return res.status(404).json({
+                message: "Пользователь не найден!",
+            });
+        }
+
+        const updatedItem = {
+            ...editingItem,
+            ...{ name, surname, email },
+        };
+
+        Object.assign(editingItem, updatedItem);
+
+        await editingItem.save();
+
+        res.json({
+            message: "success",
+            data: editingItem,
+        });
+    } catch (error) {
+        res.status(403).json({
+            errorMessage: "Не удалось обновить пользователя",
+            error,
+        });
+    }
+};

@@ -83,3 +83,28 @@ export const deleteAll = async (req: Request, res: Response) => {
         });
     }
 };
+
+export const deleteOne = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+
+        const item = await motherboard.findById(id);
+        if (!item) {
+            return res.status(404).json({
+                message: "Продукт не найден!",
+            });
+        }
+
+        await motherboard.deleteOne({ _id: id });
+
+        res.json({
+            message: "Успех!",
+            data: "Материнская плата была удалена",
+        });
+    } catch (error) {
+        res.status(403).json({
+            errorMessage: "Не удалось удалить материнскую плату",
+            error,
+        });
+    }
+};

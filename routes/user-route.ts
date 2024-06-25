@@ -7,6 +7,7 @@ import {
     deleteAll,
     logout,
     recovery,
+    update,
 } from "../controllers/user-controller";
 
 export const userRoute = (app: Express) => {
@@ -17,6 +18,8 @@ export const userRoute = (app: Express) => {
     app.post("/user/login", login);
     app.post("/user/logout", logout);
     app.post("/user/recovery", recovery);
+
+    app.patch("/user/edit", update);
 
     app.delete("/user/deleteAll", deleteAll);
 };
